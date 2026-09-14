@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi Biblioteca</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: Helvetica, Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #f0f0f0;
+    padding: 20px;
+  }
+
+  h1 {
+    margin-bottom: 20px;
+    font-size: 22px;
+  }
+
+  /* Contenedor principal: menú + visor, en columna en pantallas pequeñas */
+  .contenedor {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 220px;
+  }
+
+  .menu button {
+    background-color: #2a2a2a;
+    color: #f0f0f0;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 12px;
+    text-align: left;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  .menu button.activo {
+    background-color: #3d7cff;
+    border-color: #3d7cff;
+  }
+
+  .visor {
+    flex: 1;
+    min-width: 280px;
+    background-color: #2a2a2a;
+    border-radius: 6px;
+    padding: 10px;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .visor iframe,
+  .visor video {
+    width: 100%;
+    height: 500px;
+    border: none;
+    border-radius: 4px;
+  }
+
+  .mensaje {
+    color: #999;
+    text-align: center;
+    padding: 20px;
+  }
+</style>
+</head>
+<body>
+
+  <h1>Mi Biblioteca de Documentos y Videos</h1>
+
+  <div class="contenedor">
+    <div class="menu" id="menu"></div>
+    <div class="visor" id="visor">
+      <p class="mensaje">Selecciona un elemento del menú para verlo aquí</p>
+    </div>
+  </div>
+
+<script>
+  // -----------------------------------------------------
+  // 1. Lista de contenidos disponibles.
+  //    Agrega aquí cada PDF o video que subas a las carpetas.
+  //    tipo: "pdf" o "video"
+  // -----------------------------------------------------
+  var contenidos = [
+    { tipo: "pdf", nombre: "Atalaya de Estudio Julio 2026", archivo: "pdfs/atalaya-julio-2026.pdf" },
+    { tipo: "video", nombre: "Planifica tu futuro ahora", archivo: "videos/planifica-tu-futuro.mp4" }
+  ];
+
+  // Esta variable cumple el mismo rol que "useState" en React:
+  // guarda cuál es el contenido seleccionado actualmente.
+  var contenidoActual = null;
+
+  var menu = document.getElementById("menu");
+  var visor = document.getElementById("visor");
+
+  // -----------------------------------------------------
+  // 2. Construir los botones del menú a partir de la lista
+  // -----------------------------------------------------
+  function construirMenu() {
+    for (var i = 0; i < contenidos.length; i++) {
+      (function (item, index) {
+        var boton = document.createElement("button");
+        boton.textContent = (item.tipo === "pdf" ? "📄 " : "🎬 ") + item.nombre;
+        boton.addEventListener("click", function () {
+          seleccionarContenido(index);
+        });
+        menu.appendChild(boton);
+      })(contenidos[i], i);
+    }
+  }
+
+  // -----------------------------------------------------
+  // 3. Actualizar "el estado" y volver a dibujar el visor
+  //    (equivalente manual a lo que React hace automático)
+  // -----------------------------------------------------
+  function seleccionarContenido(index) {
+    contenidoActual = index;
+    actualizarBotonesActivos();
+    mostrarEnVisor(contenidos[index]);
+  }
+
+  function actualizarBotonesActivos() {
+    var botones = menu.querySelectorAll("button");
+    for (var i = 0; i < botones.length; i++) {
+      if (i === contenidoActual) {
+        botones[i].className = "activo";
+      } else {
+        botones[i].className = "";
+      }
+    }
+  }
+
+  function mostrarEnVisor(item) {
+    visor.innerHTML = "";
+
+    if (item.tipo === "pdf") {
+      var iframe = document.createElement("iframe");
+      iframe.src = item.archivo;
+      visor.appendChild(iframe);
+    } else if (item.tipo === "video") {
+      var video = document.createElement("video");
+      video.src = item.archivo;
+      video.controls = true;
+      visor.appendChild(video);
+    }
+  }
+
+  construirMenu();
+</script>
+
+</body>
+</html>
